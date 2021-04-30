@@ -14,6 +14,19 @@ def solve(G):
         c: list of cities to remove
         k: list of edges to remove
     """
+    #assign k and c parameters based on size of graph
+    if (G.number_of_nodes <= 30):
+    	k_num = 15
+    	c_num = 1
+    elif (G.number_of_nodes <= 50):
+    	k_num = 50
+    	c_num = 3
+    else:
+    	k_num = 100
+    	c_num = 5
+
+    #returns a tuple (distance, path), where distance is the distance from source to target and path is a list representing the path from source to target.
+    distance, path = nx.single_source_dijkstra(G, 0, G.number_of_nodes() - 1)
     pass
 
 
