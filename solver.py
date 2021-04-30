@@ -27,6 +27,10 @@ def solve(G):
 
     #returns a tuple (distance, path), where distance is the distance from source to target and path is a list representing the path from source to target.
     distance, path = nx.single_source_dijkstra(G, 0, G.number_of_nodes() - 1)
+
+    #check s to t is still connected
+    assert G.number_of_nodes() - 1 in nx.algorithms.dag.descendants(G, 0)
+
     pass
 
 
