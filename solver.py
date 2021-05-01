@@ -5,6 +5,9 @@ import sys
 from os.path import basename, normpath
 import glob
 
+import gurobipy as gp  
+from gurobipy import GRB
+
 
 def solve(G):
     """
@@ -25,12 +28,25 @@ def solve(G):
     	k_num = 100
     	c_num = 5
 
-    #returns a tuple (distance, path), where distance is the distance from source to target and path is a list representing the path from source to target.
-    distance, path = nx.single_source_dijkstra(G, 0, G.number_of_nodes() - 1)
+    # #returns a tuple (distance, path), where distance is the distance from source to target and path is a list representing the path from source to target.
+    # distance, path = nx.single_source_dijkstra(G, 0, G.number_of_nodes() - 1)
 
-    #check s to t is still connected
-    assert G.number_of_nodes() - 1 in nx.algorithms.dag.descendants(G, 0)
+    # #check s to t is still connected
+    # assert G.number_of_nodes() - 1 in nx.algorithms.dag.descendants(G, 0)
 
+    # m = gp.Model("help")
+    # edges = m.addVars(G.edges(), vtype = GRB.BINARY, name = "edges")
+    # vertices = m.addVars(list(G.nodes()), vtype = GRB.BINARY, name = "vertices")
+
+    # m.addConstrs(sum(edges) >= G.number_of_edges() - k_num)
+    # m.addConstrs(sum(vertices) >= G.number_of_nodes() - c_num)
+    # m.addConstrs(vertices[0] == 1)
+    # m.addConstrs(vertices[G.number_of_nodes - 1] == 1)
+
+
+    # m.setObjective(, GRB.MAXIMIZE)
+
+    # m.optimize()
     pass
 
 
