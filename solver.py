@@ -79,9 +79,7 @@ def solve(G):
     # Constraint that makes sure we only delete c vertices
     m.addConstrs(gp.quicksum(vertices.values()) >= G.number_of_nodes() - c_num, "only c vertices removed")
 
-    #need constraint for s and t connectivity (and overall graph connectivity?)
-
-
+    
     m.setObjective(calculate_score(G, c_num, k_num), GRB.MAXIMIZE)
 
     # m.optimize()
