@@ -86,6 +86,15 @@ def solve(G):
     # OUR SOL WONT BE OPTIMAL WHICH JUST MEANS A LOWER SCORE, MAYBE COME UP WITH ANOTHER CONSTRAINT TO SOMEHOW ACCOUNT FOR THE EDGES THAT ARE ALSO CONNECTED TO NODE WE DISCONNECT
     m.addConstr(gp.quicksum(allEdges) >= G.number_of_edges() - k_num, "only k edges removed")
 
+    # d_edges = [e for e, i in edges if i==0] 
+
+    # d_vertices = []
+    # for v in range(G.number_of_nodes()):
+    # 	if vertices[v] == 0:
+    # 		d_vertices.add(v)
+
+    # d_vertices = [v for v, i in vertices if i==0]
+    
     # Constraint that makes sure we only delete c vertices
     m.addConstr(gp.quicksum(vertices.values()) >= G.number_of_nodes() - c_num, "only c vertices removed")
 
