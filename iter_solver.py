@@ -43,7 +43,7 @@ def solve(G):
         minLen = og_length
         d_vertex = None
         #iterate through each node except s and t
-        for j in range(1, H.number_of_nodes() - 2):
+        for j in range(1, H.number_of_nodes() - 1):
             H.remove_node(j)
             #check that we can remove the node without disconnecting the graph
             if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
