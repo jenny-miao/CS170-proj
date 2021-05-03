@@ -7,9 +7,6 @@ import glob
 import random
 import pathlib
 
-from gurobipy import *
-import gurobipy as gp
-
 def solve(G):
     """
     Args:
