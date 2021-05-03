@@ -250,50 +250,50 @@ def solve_random(G):
 
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
-if __name__ == '__main__':
-    inputs = sorted(glob.glob('inputs/inputs/large/*'))
-    for input_path in inputs:
-        output_path = 'outputs/large_gcloud/' + basename(normpath(input_path))[:-3] + '.out'
-        # if (not pathlib.Path(output_path).exists()):
-        G = read_input_file(input_path)
-        c, k = solve(G)
-        assert is_valid_solution(G, c, k)
-        distance = calculate_score(G, c, k)
-
-        print("solve")
-        
-        c2, k2 = solve_noVertex(G)
-        assert is_valid_solution(G, c2, k2)
-        score2 = calculate_score(G, c2, k2)
-
-        print("no_vertex")
-        
-        c3, k3 = solve_random(G)
-        assert is_valid_solution(G, c3, k3)
-        score3 = calculate_score(G, c3, k3)
-
-        print("random")
-
-        maxScore = max(distance, score2, score3)
-        if (maxScore == distance):
-            write_output_file(G, c, k, output_path)
-        elif (maxScore == score2):
-            write_output_file(G, c2, k2, output_path)
-        else: 
-            write_output_file(G, c3, k3, output_path)
-
-#for empty output
-
-# def solve_empty(G):
-#     return [], []
-
 # if __name__ == '__main__':
 #     inputs = sorted(glob.glob('inputs/inputs/large/*'))
 #     for input_path in inputs:
-#         output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
-#         if (not pathlib.Path(output_path).exists()):
-#             G = read_input_file(input_path)
-#             c, k = solve_empty(G)
-#             assert is_valid_solution(G, c, k)
-#             distance = calculate_score(G, c, k)
+#         output_path = 'large_gcloud/' + basename(normpath(input_path))[:-3] + '.out'
+#         # if (not pathlib.Path(output_path).exists()):
+#         G = read_input_file(input_path)
+#         c, k = solve(G)
+#         assert is_valid_solution(G, c, k)
+#         distance = calculate_score(G, c, k)
+
+#         print("solve")
+        
+#         c2, k2 = solve_noVertex(G)
+#         assert is_valid_solution(G, c2, k2)
+#         score2 = calculate_score(G, c2, k2)
+
+#         print("no_vertex")
+        
+#         c3, k3 = solve_random(G)
+#         assert is_valid_solution(G, c3, k3)
+#         score3 = calculate_score(G, c3, k3)
+
+#         print("random")
+
+#         maxScore = max(distance, score2, score3)
+#         if (maxScore == distance):
 #             write_output_file(G, c, k, output_path)
+#         elif (maxScore == score2):
+#             write_output_file(G, c2, k2, output_path)
+#         else: 
+#             write_output_file(G, c3, k3, output_path)
+
+#for empty output
+
+def solve_empty(G):
+    return [], []
+
+if __name__ == '__main__':
+    inputs = sorted(glob.glob('inputs/inputs/large/*'))
+    for input_path in inputs:
+        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
+        if (not pathlib.Path(output_path).exists()):
+            G = read_input_file(input_path)
+            c, k = solve_empty(G)
+            assert is_valid_solution(G, c, k)
+            distance = calculate_score(G, c, k)
+            write_output_file(G, c, k, output_path)
