@@ -26,3 +26,4 @@ To get outputs:
 -make sure to include your path in the first line of main
 
 -for LP: install gurobi with an academic license at https://www.gurobi.com/
+-run `python3 solver.py`
