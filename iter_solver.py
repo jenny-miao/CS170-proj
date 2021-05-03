@@ -44,9 +44,13 @@ def solve(G):
         d_vertex = None
         #iterate through each node except s and t
         for j in range(1, H.number_of_nodes() - 1):
+            #for some reason i cant use the following line
+            #j_edges = H.edges(j)
+            j_edges = G.edges(j)
             H.remove_node(j)
             #check that we can remove the node without disconnecting the graph
             if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
+                print("do i disconnect?")
                 length, path = nx.single_source_dijkstra(H, 0, t)
                 if (length < minLen):
                     minLen = length
@@ -55,6 +59,7 @@ def solve(G):
                     d_vertex = j
                 #add node back since it might not be the most optimal
             H.add_node(j)
+            H.add_edges_from(j_edges)
 
         #if theres a vertex to delete
         if d_vertex:
@@ -64,7 +69,7 @@ def solve(G):
 
     # find min path after deleting nodes
     no_nodes_length, no_nodes_path = nx.single_source_dijkstra(H, 0, t)
-    print(no_nodes_length, no_nodes_path, H.nodes)
+    print(no_nodes_length, no_nodes_path, H.nodes, H.edges)
 
     #find edges to delete
     d_edges = []
