@@ -199,7 +199,7 @@ def solve_random(G):
         remove = random.randint(1, t - 1)
         if (remove not in d_vertices):
             H.remove_node(remove)
-            d_vertices.add(remove)
+            d_vertices.append(remove)
             vertex_count += 1
 
     d_edges = []
@@ -208,7 +208,7 @@ def solve_random(G):
         remove = random.choice(H.edges)
         if (remove not in d_edges):
             H.remove_edge(remove)
-            d_edges.add(remove)
+            d_edges.append(remove)
             edge_count += 1
 
     return d_vertices, d_edges
@@ -252,7 +252,7 @@ def solve_random(G):
 if __name__ == '__main__':
     inputs = sorted(glob.glob('inputs/inputs/large/*'))
     for input_path in inputs:
-        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
+        output_path = 'outputs/large_gcloud/' + basename(normpath(input_path))[:-3] + '.out'
         # if (not pathlib.Path(output_path).exists()):
         G = read_input_file(input_path)
         c, k = solve(G)
@@ -274,3 +274,4 @@ if __name__ == '__main__':
             write_output_file(G, c2, k2, output_path)
         else: 
             write_output_file(G, c3, k3, output_path)
+        print(output_path)
