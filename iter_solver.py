@@ -213,6 +213,10 @@ def solve_random(G):
 
     return d_vertices, d_edges
 
+
+def solve_random(G):
+    return [], []
+
 # Here's an example of how to run your solver.
 
 # Usage: python3 solver.py test.in
@@ -275,3 +279,15 @@ if __name__ == '__main__':
         else: 
             write_output_file(G, c3, k3, output_path)
         print(output_path)
+
+#for empty output
+# if __name__ == '__main__':
+#     inputs = sorted(glob.glob('inputs/inputs/large/*'))
+#     for input_path in inputs:
+#         output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
+#         if (not pathlib.Path(output_path).exists()):
+#             G = read_input_file(input_path)
+#             c, k = solve_empty(G)
+#             assert is_valid_solution(G, c, k)
+#             distance = calculate_score(G, c, k)
+#             write_output_file(G, c, k, output_path)
