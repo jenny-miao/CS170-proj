@@ -115,7 +115,7 @@ def solve_noVertex(G):
         k: list of edges to remove
     """
     #assign k and c parameters based on size of graph
-   if (G.number_of_nodes() <= 30):
+    if (G.number_of_nodes() <= 30):
         k_num = 15
         c_num = 1
     elif (G.number_of_nodes() <= 50):
@@ -176,7 +176,7 @@ def solve_random(G):
         k: list of edges to remove
     """
     #assign k and c parameters based on size of graph
-   if (G.number_of_nodes() <= 30):
+    if (G.number_of_nodes() <= 30):
         k_num = 15
         c_num = 1
     elif (G.number_of_nodes() <= 50):
