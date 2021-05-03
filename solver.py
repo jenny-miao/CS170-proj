@@ -37,35 +37,45 @@ def solve(G):
     # FOR ALL VERTEX AND EDGE VARIABLES IN LP 1 MEANS WE KEEP 0 MEANS WE DELETE
 
     m = gp.Model("help")
+    # We keep track of vertex variables and edge variables corresponding for edges adjacent to every v
     edges = {v: [] for v in G.nodes()}
-    flow = []
     vertices = {}
     allEdges = []
 
+    # Need to keep track of flow variables for constraint for connectivity
     s = G.nodes()[0]
-    t = G.nodes()[G.number_of_nodes() - 1]
-    fromS = []
-    toS = []
-    fromT = []
-    toT = []
+    t = G.nodes()[G.number_of_nodes - 1]
+    flowTo = {v : [] for v in G.nodes()}
+    flowFrom = {v : [] for v in G.nodes()}
 
     for (u,v) in G.edges:
+        # Create edgeVars - these will be the edges what we delete/keep
         edgeVar = m.addVar(vtype = GRB.BINARY, name = "e_" + str(u) + "," + str(v))
         edges[u].append(edgeVar)
         edges[v].append(edgeVar)
         allEdges.append(edgeVar)
 
-        if u == s: 
+        flowVar1 = m.addVar(vtype = GRB.INTEGER, ub = 1, lb = -1, name = "f_" + str(u) + "," + str(v))
+        flowVar2 = m.addVar(vtype = GRB.INTEGER, ub = 1, lb = -1, name = "f_" + str(v) + "," + str(u))
+        m.addConstr(flowVar1 == -flowVar2)
+        m.addConstr(flowVar1 <= edgeVar)
+        m.addConstr(-flowVar1 <= edgeVar)
 
-        flowVar = m.addVar(vtype = GRB.INTEGER, ub = 1, lb = -1, name = "f_" + str(u) + "," + str(v))
-        flow.append(flowVar)
-        m.addConstr(flowVar <= edgeVar)
-        m.addConstr(-flowVar <= edgeVar)
+        flowTo[v].append(flowVar1)
+        flowFrom[u].append(flowVar1)
+        flowTo[u].append(flowVar2)
+        flowFrom[v].append(flowVar2)
     
     for v in G.nodes:
         vertices[v] = m.addVar(vtype = GRB.BINARY, name = "n_" + str(v))
         # This constraint ensures if one vertex removed then adjacent edges must also be not used
         m.addConstr(len(edges[v]) * vertices[v] >= gp.quicksum(edges[v]), "if " + str(v) + " removed then so must adjacent edges")
+        if v == s:
+            m.addConstr(gp.quicksum(flowTo[v]) - gp.quicksum(flowFrom[v]) == 1) 
+        elif v == t:
+            m.addConstr(gp.quicksum(flowTo[v]) - gp.quicksum(flowFrom[v]) == -1) 
+        else:
+            m.addConstr(gp.quicksum(flowTo[v]) - gp.quicksum(flowFrom[v]) == 0) 
         
     #s and t cannot be deleted
     m.addConstr(vertices[0] == 1, "s not deleted")
@@ -74,7 +84,7 @@ def solve(G):
     # Constraint that makes sure we only delete k edges
     # THIS IS AN APPROXIMATION SINCE WE FORCE ADJACENT EDGES TO BE DELETED IF WE REMOVE NODE SO THIS LIMITS THE NUMBER WE CAN REMOVE
     # OUR SOL WONT BE OPTIMAL WHICH JUST MEANS A LOWER SCORE, MAYBE COME UP WITH ANOTHER CONSTRAINT TO SOMEHOW ACCOUNT FOR THE EDGES THAT ARE ALSO CONNECTED TO NODE WE DISCONNECT
-    m.addConstrs(gp.quicksum(allEdges) >= G.number_of_edges() - k_num, "only k edges removed")
+    m.addConstr(gp.quicksum(allEdges) >= G.number_of_edges() - k_num, "only k edges removed")
 
     # d_edges = [e for e, i in edges if i==0] 
 
@@ -86,7 +96,7 @@ def solve(G):
     # d_vertices = [v for v, i in vertices if i==0]
     
     # Constraint that makes sure we only delete c vertices
-    m.addConstrs(gp.quicksum(vertices.values()) >= G.number_of_nodes() - c_num, "only c vertices removed")
+    m.addConstr(gp.quicksum(vertices.values()) >= G.number_of_nodes() - c_num, "only c vertices removed")
 
     
     m.setObjective(calculate_score(G, c_num, k_num), GRB.MAXIMIZE)
