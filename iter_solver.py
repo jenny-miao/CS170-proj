@@ -207,7 +207,8 @@ def solve_random(G):
     while ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H) and (edge_count < k_num)):
         remove = random.choice([e for e in H.edges])
         if (remove not in d_edges):
-            H.remove_edge(remove)
+            u,v = remove
+            H.remove_edge(u,v)
             d_edges.append(remove)
             edge_count += 1
 
