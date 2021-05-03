@@ -74,7 +74,7 @@ def solve(G):
     # find min path after deleting nodes
     no_nodes_length, no_nodes_path = nx.single_source_dijkstra(H, 0, t)
 
-    print("start edges")
+    # print("start edges")
     #find edges to delete
     d_edges = []
     for x in range(k_num):
@@ -104,6 +104,65 @@ def solve(G):
     return d_vertices, d_edges
 
 
+def solve_noVertex(G):
+    """
+    Args:
+        G: networkx.Graph
+    Returns:
+        c: list of cities to remove
+        k: list of edges to remove
+    """
+    #assign k and c parameters based on size of graph
+    if (G.number_of_nodes() <= 30):
+        k_num = 15
+    elif (G.number_of_nodes() <= 50):
+        k_num = 50
+    else:
+        k_num = 100
+
+    #check s to t is still connected
+    #assert G.number_of_nodes() - 1 in nx.algorithms.dag.descendants(G, 0)
+    t = G.number_of_nodes() - 1
+
+    H = G.copy()
+
+    # find og min path
+    og_length, og_path = nx.single_source_dijkstra(H, 0, t)
+
+    #give up on vertices
+    d_vertices = []
+    # find min path after deleting nodes
+    no_nodes_length, no_nodes_path = nx.single_source_dijkstra(H, 0, t)
+
+    # print("start edges")
+    #find edges to delete
+    d_edges = []
+    for x in range(k_num):
+        minLen = no_nodes_length
+        d_edge = None
+        #iterate through each edge
+        for edge in H.edges:
+            u, v = edge
+            if ((u not in d_vertices) and (v not in d_vertices)):
+                H.remove_edge(u, v)
+                #check that we can remove the edge without disconnecting the graph
+                if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
+                    length, path = nx.single_source_dijkstra(H, 0, t)
+                    #if better than previous option, update
+                    if (length < minLen):
+                        minLen = length
+                        d_edge = edge
+                #add edge back since it might not be the most optimal
+                H.add_edge(u, v)
+
+        #if theres an edge to delete
+        if d_edge:
+            u, v = d_edge
+            H.remove_edge(u, v)
+            d_edges.append(d_edge)
+
+    return d_vertices, d_edges
+
 # Here's an example of how to run your solver.
 
 # Usage: python3 solver.py test.in
@@ -114,8 +173,20 @@ if __name__ == '__main__':
     G = read_input_file(path)
     c, k = solve(G)
     assert is_valid_solution(G, c, k)
-    print("Shortest Path Difference: {}".format(calculate_score(G, c, k)))
-    write_output_file(G, c, k, 'outputs/small-1.out')
+    score1 = calculate_score(G, c, k)
+    
+    c2, k2 = solve_noVertex(G)
+    assert is_valid_solution(G, c2, k2)
+    score2 = calculate_score(G, c2, k2)
+
+    print("Shortest Path Difference (with vertex: {}".format(calculate_score(G, c, k)))
+    print("Shortest Path Difference (without vertex: {}".format(calculate_score(G, c2, k2)))
+
+    if (score1 > score2):
+        write_output_file(G, c, k, 'outputs/small-1.out')
+    else:
+        write_output_file(G, c2, k2, 'outputs/small-1.out')
+
 
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
@@ -127,4 +198,12 @@ if __name__ == '__main__':
 #         c, k = solve(G)
 #         assert is_valid_solution(G, c, k)
 #         distance = calculate_score(G, c, k)
-#         write_output_file(G, c, k, output_path)
+    
+#         c2, k2 = solve_noVertex(G)
+#         assert is_valid_solution(G, c2, k2)
+#         score2 = calculate_score(G, c2, k2)
+
+#         if (distance > score2):
+#             write_output_file(G, c, k, output_path)
+#         else:
+#             write_output_file(G, c2, k2, output_path)
