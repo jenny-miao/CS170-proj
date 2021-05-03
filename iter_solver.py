@@ -203,7 +203,7 @@ def solve_random(G):
         if (remove not in d_vertices):
             H.remove_node(remove)
             d_vertices.add(remove)
-            vertex_count++
+            vertex_count += 
 
     d_edges = []
     edge_count = 0
@@ -212,7 +212,7 @@ def solve_random(G):
         if (remove not in d_edges):
             H.remove_edge(remove)
             d_edges.add(remove)
-            edge_count++
+            edge_count += 1
 
     return d_vertices, d_edges
 
