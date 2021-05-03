@@ -68,7 +68,6 @@ def solve(G):
         #if theres a vertex to delete
         if d_vertex:
             H.remove_node(d_vertex)
-            print(d_vertex, H.edges)
             # available_vertices.remove(d_vertex)
             d_vertices.append(d_vertex)
 
