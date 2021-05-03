@@ -46,20 +46,21 @@ def solve(G):
         for j in range(1, H.number_of_nodes() - 1):
             #for some reason i cant use the following line
             #j_edges = H.edges(j)
-            j_edges = G.edges(j)
-            H.remove_node(j)
-            #check that we can remove the node without disconnecting the graph
-            if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
-                print("do i disconnect?")
-                length, path = nx.single_source_dijkstra(H, 0, t)
-                if (length < minLen):
-                    minLen = length
-                    print("new minLen")
-                    print(minLen)
-                    d_vertex = j
-                #add node back since it might not be the most optimal
-            H.add_node(j)
-            H.add_edges_from(j_edges)
+            if (H.has_node(j)):
+                j_edges = G.edges(j)
+                H.remove_node(j)
+                #check that we can remove the node without disconnecting the graph
+                if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
+                    print("do i disconnect?")
+                    length, path = nx.single_source_dijkstra(H, 0, t)
+                    if (length < minLen):
+                        minLen = length
+                        print("new minLen")
+                        print(minLen)
+                        d_vertex = j
+                    #add node back since it might not be the most optimal
+                H.add_node(j)
+                H.add_edges_from(j_edges)
 
         #if theres a vertex to delete
         if d_vertex:
