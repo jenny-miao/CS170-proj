@@ -39,9 +39,9 @@ def solve(G):
     #find best nodes to delete first
     d_vertices = []
     for i in range(c_num):
-        available_vertices = list(H.nodes)
-        available_vertices.remove(0)
-        available_vertices.remove(t)
+        # available_vertices = list(H.nodes)
+        # available_vertices.remove(0)
+        # available_vertices.remove(t)
         minLen = og_length
         d_vertex = None
         #iterate through each node except s and t
@@ -50,7 +50,9 @@ def solve(G):
             #for some reason i cant use the following line
             #j_edges = H.edges(j)
             if (H.has_node(j) and j not in d_vertices):
-                j_edges = G.edges(j)
+                F = H.copy()
+                j_edges = F.edges(j)
+                # print(j_edges)
                 H.remove_node(j)
                 #check that we can remove the node without disconnecting the graph
                 if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
@@ -61,12 +63,13 @@ def solve(G):
                     #add node back since it might not be the most optimal
                 H.add_node(j)
                 H.add_edges_from(j_edges)
+                # print(j_edges)
 
         #if theres a vertex to delete
         if d_vertex:
             H.remove_node(d_vertex)
             print(d_vertex, H.edges)
-            available_vertices.remove(d_vertex)
+            # available_vertices.remove(d_vertex)
             d_vertices.append(d_vertex)
 
     # find min path after deleting nodes
