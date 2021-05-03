@@ -205,7 +205,7 @@ def solve_random(G):
     d_edges = []
     edge_count = 0
     while ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H) and (edge_count < k_num)):
-        remove = random.choice(H.edges)
+        remove = random.choice([e for e in H.edges])
         if (remove not in d_edges):
             H.remove_edge(remove)
             d_edges.append(remove)
@@ -213,9 +213,6 @@ def solve_random(G):
 
     return d_vertices, d_edges
 
-
-def solve_random(G):
-    return [], []
 
 # Here's an example of how to run your solver.
 
@@ -262,14 +259,20 @@ if __name__ == '__main__':
         c, k = solve(G)
         assert is_valid_solution(G, c, k)
         distance = calculate_score(G, c, k)
+
+        print("solve")
         
         c2, k2 = solve_noVertex(G)
         assert is_valid_solution(G, c2, k2)
         score2 = calculate_score(G, c2, k2)
+
+        print("no_vertex")
         
         c3, k3 = solve_random(G)
         assert is_valid_solution(G, c3, k3)
         score3 = calculate_score(G, c3, k3)
+
+        print("random")
 
         maxScore = max(distance, score2, score3)
         if (maxScore == distance):
@@ -278,9 +281,12 @@ if __name__ == '__main__':
             write_output_file(G, c2, k2, output_path)
         else: 
             write_output_file(G, c3, k3, output_path)
-        print(output_path)
 
 #for empty output
+
+# def solve_empty(G):
+#     return [], []
+
 # if __name__ == '__main__':
 #     inputs = sorted(glob.glob('inputs/inputs/large/*'))
 #     for input_path in inputs:
