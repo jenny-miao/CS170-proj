@@ -34,31 +34,53 @@ def solve(G):
     # #check s to t is still connected
     # assert G.number_of_nodes() - 1 in nx.algorithms.dag.descendants(G, 0)
     # assert nx.is_connected(G)
+    # FOR ALL VERTEX AND EDGE VARIABLES IN LP 1 MEANS WE KEEP 0 MEANS WE DELETE
 
     m = gp.Model("help")
-    edges = {}
-    for (u,v) in G.edges():
-    	edges[(u,v)] = m.addVars((u,v), vtype = GRB.BINARY, name = "edges")
+    edges = {v: [] for v in G.nodes()}
+    flow = []
+    vertices = {}
+    allEdges = []
 
-    edge_keys = list(edges.keys())
-    edge_vals = list(edges.values())
-    # edges = m.addVars(G.edges(), vtype = GRB.BINARY, name = "edges")
-    vertices = m.addVars(list(G.nodes()), vtype = GRB.BINARY, name = "vertices")
+    s = G.nodes()[0]
+    t = G.nodes()[G.number_of_nodes() - 1]
+    fromS = []
+    toS = []
+    fromT = []
+    toT = []
 
-    m.addConstrs(sum(edges) >= G.number_of_edges() - k_num)
-    m.addConstrs(sum(vertices) >= G.number_of_nodes() - c_num)
+    for (u,v) in G.edges:
+        edgeVar = m.addVar(vtype = GRB.BINARY, name = "e_" + str(u) + "," + str(v))
+        edges[u].append(edgeVar)
+        edges[v].append(edgeVar)
+        allEdges.append(edgeVar)
 
-    #s and t cannot be deleted
-    m.addConstrs(vertices[0] == 1)
-    m.addConstrs(vertices[G.number_of_nodes - 1] == 1)
+        if u == s: 
+
+        flowVar = m.addVar(vtype = GRB.INTEGER, ub = 1, lb = -1, name = "f_" + str(u) + "," + str(v))
+        flow.append(flowVar)
+        m.addConstr(flowVar <= edgeVar)
+        m.addConstr(-flowVar <= edgeVar)
     
-    #if a vertex is deleted, then its edges are deleted
-    for i in range(G.number_of_nodes()):
-    	for j in range(len(edge_vals)):
-    		if (i in edge_keys[j]):
-    			m.addConstrs((vertices[i] == 0) >> edges[edge_keys[j]] == 0)
+    for v in G.nodes:
+        vertices[v] = m.addVar(vtype = GRB.BINARY, name = "n_" + str(v))
+        # This constraint ensures if one vertex removed then adjacent edges must also be not used
+        m.addConstr(len(edges[v]) * vertices[v] >= gp.quicksum(edges[v]), "if " + str(v) + " removed then so must adjacent edges")
+        
+    #s and t cannot be deleted
+    m.addConstr(vertices[0] == 1, "s not deleted")
+    m.addConstr(vertices[G.number_of_nodes() - 1] == 1, "t not deleted")
+
+    # Constraint that makes sure we only delete k edges
+    # THIS IS AN APPROXIMATION SINCE WE FORCE ADJACENT EDGES TO BE DELETED IF WE REMOVE NODE SO THIS LIMITS THE NUMBER WE CAN REMOVE
+    # OUR SOL WONT BE OPTIMAL WHICH JUST MEANS A LOWER SCORE, MAYBE COME UP WITH ANOTHER CONSTRAINT TO SOMEHOW ACCOUNT FOR THE EDGES THAT ARE ALSO CONNECTED TO NODE WE DISCONNECT
+    m.addConstrs(gp.quicksum(allEdges) >= G.number_of_edges() - k_num, "only k edges removed")
+
+    # Constraint that makes sure we only delete c vertices
+    m.addConstrs(gp.quicksum(vertices.values()) >= G.number_of_nodes() - c_num, "only c vertices removed")
 
     #need constraint for s and t connectivity (and overall graph connectivity?)
+
 
     m.setObjective(calculate_score(G, c_num, k_num), GRB.MAXIMIZE)
 
