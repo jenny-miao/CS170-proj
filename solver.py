@@ -73,6 +73,12 @@ def solve(G):
     #need constraint for s and t connectivity (and overall graph connectivity?)
 
     d_edges = [e for e, i in edges if i==0] 
+
+    d_vertices = []
+    for v in range(G.number_of_nodes()):
+    	if vertices[v] == 0:
+    		d_vertices.add(v)
+
     d_vertices = [v for v, i in vertices if i==0]
 
     m.setObjective(calculate_score(G, d_vertices, d_edges), GRB.MAXIMIZE)
