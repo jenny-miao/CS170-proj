@@ -41,10 +41,10 @@ def solve(G):
         for j in range(1, H.number_of_nodes() - 2):
             H.remove_node(j)
             #check that we can remove the node without disconnecting the graph
-            if ((t in nx.algorithms.dag.descendants(H, 0)) and H.is_connected()):
+            if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
                 length, path = nx.single_source_dijkstra(H, 0, t)
-                if (length[t] < minLen):
-                    minLen = length[t]
+                if (length < minLen):
+                    minLen = length
                     d_vertex = j
                 #add node back since it might not be the most optimal
             H.add_node(j)
@@ -52,7 +52,7 @@ def solve(G):
         #if theres a vertex to delete
         if d_vertex:
             H.remove_node(d_vertex)
-            d_vertices.add(d_vertex)
+            d_vertices.append(d_vertex)
 
     #find min path after deleting nodes
     # no_nodes_length, no_nodes_path = nx.single_source_dijkstra(H, 0, t)
@@ -64,21 +64,22 @@ def solve(G):
         d_edge = None
         #iterate through each edge
         for edge in H.edges:
-            H.remove_edge(edge)
+            u, v = edge
+            H.remove_edge(u, v)
             #check that we can remove the edge without disconnecting the graph
-            if ((t in nx.algorithms.dag.descendants(H, 0)) and H.is_connected()):
+            if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
                 length, path = nx.single_source_dijkstra(H, 0, t)
                 #if better than previous option, update
-                if (length[t] < minLen):
-                    minLen = length[t]
+                if (length < minLen):
+                    minLen = length
                     d_edge = edge
             #add edge back since it might not be the most optimal
-            H.add_edge(edge)
+            H.add_edge(u, v)
 
         #if theres an edge to delete
         if d_edge:
             H.remove_edge(edge)
-            d_edges.add(edge)
+            d_edges.append(edge)
 
     return d_vertices, d_edges
 
