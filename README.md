@@ -22,8 +22,8 @@ When writing inputs/outputs:
   - These are the functions run by the autograder to validate submissions
 
 To get outputs:
--run `python3 iter_solver.py`
--make sure to include your path in the first line of main
+- run `python3 iter_solver.py`
+- make sure to include your path in the first line of main
 
--for LP: install gurobi with an academic license at https://www.gurobi.com/
--run `python3 solver.py`
+- for LP: install gurobi with an academic license at https://www.gurobi.com/
+  - run `python3 solver.py`
