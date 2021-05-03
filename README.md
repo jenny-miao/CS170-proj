@@ -25,5 +25,5 @@ To get outputs:
 - run `python3 iter_solver.py`
 - make sure to include your path in the first line of main
 
-- for LP: install gurobi with an academic license at https://www.gurobi.com/
+- for LP (in progress, do not use to get outputs): install gurobi with an academic license at https://www.gurobi.com/
   - run `python3 solver.py`

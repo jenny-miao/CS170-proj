@@ -5,6 +5,7 @@ import sys
 from os.path import basename, normpath
 import glob
 import random
+import pathlib
 
 from gurobipy import *
 import gurobipy as gp
@@ -219,59 +220,60 @@ def solve_random(G):
 
 # Usage: python3 solver.py test.in
 
-if __name__ == '__main__':
-    assert len(sys.argv) == 2
-    path = sys.argv[1]
-    G = read_input_file(path)
-    c, k = solve(G)
-    assert is_valid_solution(G, c, k)
-    score1 = calculate_score(G, c, k)
+# if __name__ == '__main__':
+#     assert len(sys.argv) == 2
+#     path = sys.argv[1]
+#     G = read_input_file(path)
+#     c, k = solve(G)
+#     assert is_valid_solution(G, c, k)
+#     score1 = calculate_score(G, c, k)
     
-    c2, k2 = solve_noVertex(G)
-    assert is_valid_solution(G, c2, k2)
-    score2 = calculate_score(G, c2, k2)
+#     c2, k2 = solve_noVertex(G)
+#     assert is_valid_solution(G, c2, k2)
+#     score2 = calculate_score(G, c2, k2)
 
-    c3, k3 = solve_random(G)
-    assert is_valid_solution(G, c3, k3)
-    score3 = calculate_score(G, c3, k3)
+#     c3, k3 = solve_random(G)
+#     assert is_valid_solution(G, c3, k3)
+#     score3 = calculate_score(G, c3, k3)
 
-    print("Shortest Path Difference (with vertex: {}".format(calculate_score(G, c, k)))
-    print("Shortest Path Difference (without vertex: {}".format(calculate_score(G, c2, k2)))
-    print("Shortest Path Difference (random: {}".format(calculate_score(G, c3, k3)))
+#     print("Shortest Path Difference (with vertex: {}".format(calculate_score(G, c, k)))
+#     print("Shortest Path Difference (without vertex: {}".format(calculate_score(G, c2, k2)))
+#     print("Shortest Path Difference (random: {}".format(calculate_score(G, c3, k3)))
 
-    maxScore = max(score1, score2, score3)
-    if (maxScore == score1):
-        write_output_file(G, c, k, 'outputs/small-1.out')
-    elif (maxScore == score2):
-        write_output_file(G, c2, k2, 'outputs/small-1.out')
-    else: 
-        write_output_file(G, c3, k3, 'outputs/small-1.out')
+#     maxScore = max(score1, score2, score3)
+#     if (maxScore == score1):
+#         write_output_file(G, c, k, 'outputs/small-1.out')
+#     elif (maxScore == score2):
+#         write_output_file(G, c2, k2, 'outputs/small-1.out')
+#     else: 
+#         write_output_file(G, c3, k3, 'outputs/small-1.out')
 
 
 
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
-# if __name__ == '__main__':
-#     inputs = glob.glob('inputs/*')
-#     for input_path in inputs:
-#         output_path = 'outputs/' + basename(normpath(input_path))[:-3] + '.out'
-#         G = read_input_file(input_path)
-#         c, k = solve(G)
-#         assert is_valid_solution(G, c, k)
-#         distance = calculate_score(G, c, k)
-    
-#         c2, k2 = solve_noVertex(G)
-#         assert is_valid_solution(G, c2, k2)
-#         score2 = calculate_score(G, c2, k2)
+if __name__ == '__main__':
+    inputs = sorted(glob.glob('inputs/inputs/large/*'))
+    for input_path in inputs:
+        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
+        if (not pathlib.Path(output_path).exists()):
+            G = read_input_file(input_path)
+            c, k = solve(G)
+            assert is_valid_solution(G, c, k)
+            distance = calculate_score(G, c, k)
+        
+            c2, k2 = solve_noVertex(G)
+            assert is_valid_solution(G, c2, k2)
+            score2 = calculate_score(G, c2, k2)
 
-#         c3, k3 = solve_random(G)
-#         assert is_valid_solution(G, c3, k3)
-#         score3 = calculate_score(G, c3, k3)
+            c3, k3 = solve_random(G)
+            assert is_valid_solution(G, c3, k3)
+            score3 = calculate_score(G, c3, k3)
 
-#         maxScore = max(distance, score2, score3)
-#         if (maxScore == distance):
-#             write_output_file(G, c, k, output_path)
-#         elif (maxScore == score2):
-#             write_output_file(G, c2, k2, output_path)
-#         else: 
-#             write_output_file(G, c3, k3, output_path)
+            maxScore = max(distance, score2, score3)
+            if (maxScore == distance):
+                write_output_file(G, c, k, output_path)
+            elif (maxScore == score2):
+                write_output_file(G, c2, k2, output_path)
+            else: 
+                write_output_file(G, c3, k3, output_path)
