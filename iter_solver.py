@@ -35,28 +35,28 @@ def solve(G):
 
     # find og min path
     og_length, og_path = nx.single_source_dijkstra(H, 0, t)
-    print(og_length, og_path, H.nodes)
 
     #find best nodes to delete first
     d_vertices = []
     for i in range(c_num):
+        available_vertices = list(H.nodes)
+        available_vertices.remove(0)
+        available_vertices.remove(t)
         minLen = og_length
         d_vertex = None
         #iterate through each node except s and t
-        for j in range(1, H.number_of_nodes() - 1):
+        # for j in available_vertices:
+        for j in range(1, t):
             #for some reason i cant use the following line
             #j_edges = H.edges(j)
-            if (H.has_node(j)):
+            if (H.has_node(j) and j not in d_vertices):
                 j_edges = G.edges(j)
                 H.remove_node(j)
                 #check that we can remove the node without disconnecting the graph
                 if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
-                    print("do i disconnect?")
                     length, path = nx.single_source_dijkstra(H, 0, t)
-                    if (length < minLen):
+                    if (length <= minLen):
                         minLen = length
-                        print("new minLen")
-                        print(minLen)
                         d_vertex = j
                     #add node back since it might not be the most optimal
                 H.add_node(j)
@@ -64,14 +64,15 @@ def solve(G):
 
         #if theres a vertex to delete
         if d_vertex:
-            print("removing a node")
             H.remove_node(d_vertex)
+            print(d_vertex, H.edges)
+            available_vertices.remove(d_vertex)
             d_vertices.append(d_vertex)
 
     # find min path after deleting nodes
     no_nodes_length, no_nodes_path = nx.single_source_dijkstra(H, 0, t)
-    print(no_nodes_length, no_nodes_path, H.nodes, H.edges)
 
+    print("start edges")
     #find edges to delete
     d_edges = []
     for x in range(k_num):
@@ -80,19 +81,17 @@ def solve(G):
         #iterate through each edge
         for edge in H.edges:
             u, v = edge
-            H.remove_edge(u, v)
-            print(x)
-            print(edge)
-            #check that we can remove the edge without disconnecting the graph
-            if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
-                print("im in the connecting check")
-                length, path = nx.single_source_dijkstra(H, 0, t)
-                #if better than previous option, update
-                if (length < minLen):
-                    minLen = length
-                    d_edge = edge
-            #add edge back since it might not be the most optimal
-            H.add_edge(u, v)
+            if ((u not in d_vertices) and (v not in d_vertices)):
+                H.remove_edge(u, v)
+                #check that we can remove the edge without disconnecting the graph
+                if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
+                    length, path = nx.single_source_dijkstra(H, 0, t)
+                    #if better than previous option, update
+                    if (length < minLen):
+                        minLen = length
+                        d_edge = edge
+                #add edge back since it might not be the most optimal
+                H.add_edge(u, v)
 
         #if theres an edge to delete
         if d_edge:
@@ -100,9 +99,6 @@ def solve(G):
             H.remove_edge(u, v)
             d_edges.append(d_edge)
 
-    print(d_vertices)
-    print("edges")
-    print(d_edges)
     return d_vertices, d_edges
 
 
