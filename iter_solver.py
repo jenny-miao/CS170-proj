@@ -252,7 +252,7 @@ def solve_random(G):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
-    inputs = sorted(glob.glob('inputs/inputs/large/*'))
+    inputs = sorted(glob.glob('inputs/large/*'))
     for input_path in inputs:
         output_path = 'large_gcloud/' + basename(normpath(input_path))[:-3] + '.out'
         # if (not pathlib.Path(output_path).exists()):
