@@ -215,6 +215,57 @@ def solve_random(G):
     return d_vertices, d_edges
 
 
+def solve_di(G):
+    """
+    Args:
+        G: networkx.Graph
+    Returns:
+        c: list of cities to remove
+        k: list of edges to remove
+    """
+    #assign k and c parameters based on size of graph
+    if (G.number_of_nodes() <= 30):
+        k_num = 15
+        c_num = 1
+    elif (G.number_of_nodes() <= 50):
+        k_num = 50
+        c_num = 3
+    else:
+        k_num = 100
+        c_num = 5
+
+    #check s to t is still connected
+    #assert G.number_of_nodes() - 1 in nx.algorithms.dag.descendants(G, 0)
+    t = G.number_of_nodes() - 1
+
+    H = G.copy()
+
+    # find og min path
+    og_length, og_path = nx.single_source_dijkstra(H, 0, t)
+    d_vertices = []
+    #find edges to delete
+    d_edges = []
+    count = 0
+    while (count < k_num):
+        index = 0
+        length, path = nx.single_source_dijkstra(H, 0, t)
+        count += 1
+        while (index < len(path) - 1):
+            u = path[index]
+            v = path[index + 1]    
+            H.remove_edge(u, v) 
+            if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
+                d_edges.append((u, v))
+                index = 100000
+            else: 
+                H.add_edge(u, v)
+                index += 1
+
+    return d_vertices, d_edges
+
+
+
+
 # Here's an example of how to run your solver.
 
 # Usage: python3 solver.py test.in
@@ -223,29 +274,29 @@ def solve_random(G):
 #     assert len(sys.argv) == 2
 #     path = sys.argv[1]
 #     G = read_input_file(path)
-#     c, k = solve(G)
-#     assert is_valid_solution(G, c, k)
-#     score1 = calculate_score(G, c, k)
+#     # c, k = solve(G)
+#     # assert is_valid_solution(G, c, k)
+#     # score1 = calculate_score(G, c, k)
     
-#     c2, k2 = solve_noVertex(G)
-#     assert is_valid_solution(G, c2, k2)
-#     score2 = calculate_score(G, c2, k2)
+#     # c2, k2 = solve_noVertex(G)
+#     # assert is_valid_solution(G, c2, k2)
+#     # score2 = calculate_score(G, c2, k2)
 
-#     c3, k3 = solve_random(G)
+#     c3, k3 = solve_di(G)
 #     assert is_valid_solution(G, c3, k3)
 #     score3 = calculate_score(G, c3, k3)
 
-#     print("Shortest Path Difference (with vertex: {}".format(calculate_score(G, c, k)))
-#     print("Shortest Path Difference (without vertex: {}".format(calculate_score(G, c2, k2)))
-#     print("Shortest Path Difference (random: {}".format(calculate_score(G, c3, k3)))
+#     # print("Shortest Path Difference (with vertex: {}".format(calculate_score(G, c, k)))
+#     # print("Shortest Path Difference (without vertex: {}".format(calculate_score(G, c2, k2)))
+#     print("Shortest Path Difference (dijk: {}".format(calculate_score(G, c3, k3)))
 
-#     maxScore = max(score1, score2, score3)
-#     if (maxScore == score1):
-#         write_output_file(G, c, k, 'outputs/small-1.out')
-#     elif (maxScore == score2):
-#         write_output_file(G, c2, k2, 'outputs/small-1.out')
-#     else: 
-#         write_output_file(G, c3, k3, 'outputs/small-1.out')
+#     # maxScore = max(score1, score3)
+#     # if (maxScore == score1):
+#     #     write_output_file(G, c, k, 'outputs/small-1.out')
+#     # else: 
+#     #     write_output_file(G, c3, k3, 'outputs/small-1.out')
+#     write_output_file(G, c3, k3, 'outputs/large-3.out')
+
 
 
 
@@ -254,34 +305,36 @@ def solve_random(G):
 if __name__ == '__main__':
     inputs = sorted(glob.glob('inputs/large/*'))
     for input_path in inputs:
-        output_path = 'large_gcloud/' + basename(normpath(input_path))[:-3] + '.out'
+        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
         # if (not pathlib.Path(output_path).exists()):
         G = read_input_file(input_path)
-        c, k = solve(G)
-        assert is_valid_solution(G, c, k)
-        distance = calculate_score(G, c, k)
-
-        print("solve")
-        
-        c2, k2 = solve_noVertex(G)
-        assert is_valid_solution(G, c2, k2)
-        score2 = calculate_score(G, c2, k2)
-
-        print("no_vertex")
-        
-        c3, k3 = solve_random(G)
+        c3, k3 = solve_di(G)
         assert is_valid_solution(G, c3, k3)
         score3 = calculate_score(G, c3, k3)
+        write_output_file(G, c3, k3, output_path)
 
-        print("random")
+    
+        # c, k = solve(G)
+        # assert is_valid_solution(G, c, k)
+        # distance = calculate_score(G, c, k)
+        
+        # c2, k2 = solve_noVertex(G)
+        # assert is_valid_solution(G, c2, k2)
+        # score2 = calculate_score(G, c2, k2)
+        
+        # c3, k3 = solve_di(G)
+        # assert is_valid_solution(G, c3, k3)
+        # score3 = calculate_score(G, c3, k3)
 
-        maxScore = max(distance, score2, score3)
-        if (maxScore == distance):
-            write_output_file(G, c, k, output_path)
-        elif (maxScore == score2):
-            write_output_file(G, c2, k2, output_path)
-        else: 
-            write_output_file(G, c3, k3, output_path)
+        # # print("random")
+
+        # maxScore = max(distance, score2, score3)
+        # if (maxScore == distance):
+        #     write_output_file(G, c, k, output_path)
+        # elif (maxScore == score2):
+        #     write_output_file(G, c2, k2, output_path)
+        # else:
+        #     write_output_file(G, c3, k3, output_path)
 
 #for empty output
 
