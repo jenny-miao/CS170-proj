@@ -268,20 +268,45 @@ def solve_di(G):
     #find edges to delete
     d_edges = []
     count = 0
+    # while (count < k_num):
+    #     index = 0
+    #     length, path = nx.single_source_dijkstra(H, 0, t)
+    #     count += 1
+    #     while (index < len(path) - 1):
+    #         u = path[index]
+    #         v = path[index + 1]    
+    #         H.remove_edge(u, v) 
+    #         if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
+    #             d_edges.append((u, v))
+    #             index = 100000
+    #         else: 
+    #             H.add_edge(u, v)
+    #             index += 1
+
     while (count < k_num):
         index = 0
         length, path = nx.single_source_dijkstra(H, 0, t)
         count += 1
+        potential_edges = []
         while (index < len(path) - 1):
             u = path[index]
             v = path[index + 1]    
             H.remove_edge(u, v) 
             if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
-                d_edges.append((u, v))
-                index = 100000
-            else: 
-                H.add_edge(u, v)
-                index += 1
+                potential_edges.append((u, v))
+            H.add_edge(u, v)
+            index += 1
+        bestLen = float('inf')
+        bestEdge = None
+        for edge in potential_edges:
+            u, v = edge
+            if G[u][v]['weight'] < bestLen:
+                bestLen = G[u][v]['weight']
+                bestEdge = edge
+        if (bestEdge and bestEdge not in d_edges):
+            u, v = bestEdge
+            H.remove_edge(u, v)
+            d_edges.append(bestEdge)
 
     return d_vertices, d_edges
 
@@ -325,9 +350,9 @@ def solve_di(G):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
-    inputs = sorted(glob.glob('inputs/medium/*'))
+    inputs = sorted(glob.glob('inputs/large/*'))
     for input_path in inputs:
-        output_path = 'outputs/medium/' + basename(normpath(input_path))[:-3] + '.out'
+        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
         # if (not pathlib.Path(output_path).exists()):
         G = read_input_file(input_path)
         c3, k3 = solve_di(G)
