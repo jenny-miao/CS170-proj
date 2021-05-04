@@ -240,9 +240,25 @@ def solve_di(G):
 
     H = G.copy()
 
-    # find og min path
-    og_length, og_path = nx.single_source_dijkstra(H, 0, t)
     d_vertices = []
+    count = 0
+    while (count < c_num):
+        index = 1
+        length, path = nx.single_source_dijkstra(H, 0, t)
+        count += 1
+        while (index < len(path) - 1):
+            u = path[index]
+            F = H.copy()
+            j_edges = F.edges(u)
+            H.remove_node(u) 
+            if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
+                d_vertices.append(u)
+                index = 100000
+            else: 
+                H.add_node(u)
+                H.add_edges_from(j_edges)
+                index += 1
+
     #find edges to delete
     d_edges = []
     count = 0
