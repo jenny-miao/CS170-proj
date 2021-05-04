@@ -246,18 +246,24 @@ def solve_di(G):
         index = 1
         length, path = nx.single_source_dijkstra(H, 0, t)
         count += 1
+        max_edges = 0
+        best_vertex = 1
         while (index < len(path) - 1):
             u = path[index]
-            F = H.copy()
-            j_edges = F.edges(u)
-            H.remove_node(u) 
-            if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
-                d_vertices.append(u)
-                index = 100000
-            else: 
+            if (u != t and u not in d_vertices):
+                F = H.copy()
+                j_edges = F.edges(u)
+                H.remove_node(u) 
+                if ((t in nx.algorithms.dag.descendants(H, 0)) and nx.is_connected(H)):
+                    if (len(j_edges) > max_edges):
+                        max_edges = len(j_edges)
+                        bext_vertex = u
                 H.add_node(u)
                 H.add_edges_from(j_edges)
-                index += 1
+            index += 1
+        if (best_vertex != t and best_vertex not in d_vertices):
+            H.remove_node(best_vertex)
+            d_vertices.append(best_vertex)
 
     #find edges to delete
     d_edges = []
@@ -311,7 +317,7 @@ def solve_di(G):
 #     #     write_output_file(G, c, k, 'outputs/small-1.out')
 #     # else: 
 #     #     write_output_file(G, c3, k3, 'outputs/small-1.out')
-#     write_output_file(G, c3, k3, 'outputs/large-3.out')
+#     write_output_file(G, c3, k3, 'outputs/small-1.out')
 
 
 
@@ -319,14 +325,16 @@ def solve_di(G):
 
 # For testing a folder of inputs to create a folder of outputs, you can use glob (need to import it)
 if __name__ == '__main__':
-    inputs = sorted(glob.glob('inputs/large/*'))
+    inputs = sorted(glob.glob('inputs/medium/*'))
     for input_path in inputs:
-        output_path = 'outputs/large/' + basename(normpath(input_path))[:-3] + '.out'
+        output_path = 'outputs/medium/' + basename(normpath(input_path))[:-3] + '.out'
         # if (not pathlib.Path(output_path).exists()):
         G = read_input_file(input_path)
         c3, k3 = solve_di(G)
         assert is_valid_solution(G, c3, k3)
         score3 = calculate_score(G, c3, k3)
+        # print(output_path)
+        # print(score3)
         write_output_file(G, c3, k3, output_path)
 
     
